@@ -1,0 +1,34 @@
+﻿# Jetbrains Rider / Visual Studio junk
+.idea/
+/_ReSharper.Caches/
+/.idea/.idea.PubKeyFinder/.idea/workspace.xml
+/.idea/.idea.PubKeyFinder/.idea/dataSources/
+/.idea/.idea.PubKeyFinder/.idea/dataSources.local.xml
+/PubKeyFinder.sln.DotSettings.user
+*.sln.DotSettings.user
+.vs/
+
+# Visual Studio Code junk
+PubKeyFinder/.vscode/tasks.json
+PubKeyFinder/.vscode/launch.json
+.vscode/tasks.json
+.vscode/launch.json
+.editorconfig
+launchSettings.json
+
+# macOS Junk
+.DS_Store
+
+# MSBuild stuff
+bin/
+obj/
+/packages/
+
+# Misc
+*.bak
+*.old
+BACKUP*
+backup*
+
+*.tmp
+*.bin
