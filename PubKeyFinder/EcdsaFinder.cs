@@ -10,13 +10,12 @@ namespace PubKeyFinder;
 
 public static class EcdsaFinder
 {
-
     private static ECDomainParameters FromX9EcParams(X9ECParameters param) =>
         new(param.Curve, param.G, param.N, param.H, param.GetSeed());
 
     public static ECDomainParameters CurveFromName(string name) => FromX9EcParams(ECNamedCurveTable.GetByName(name));
     
-    public static IEnumerable<ECPoint> RecoverPublicKey(ECDomainParameters curve, NpTicket ticket)
+    public static IEnumerable<ECPoint> RecoverPublicKey(ECDomainParameters curve, NpTicket ticket, bool verifyResult = true)
     {
         var points = new List<ECPoint>();
         for (int i = 0; i < 4; i++)
@@ -25,12 +24,19 @@ public static class EcdsaFinder
             {
                 ECPoint? p = RecoverPubKey(curve, ticket.R, ticket.S, ticket.HashedMessage, i);
                 if (p == null) continue;
-                
-                ECPublicKeyParameters pubKey = new(p.Normalize(), curve);
-                ISigner signer = SignerUtilities.GetSigner(ticket.HashName + "withECDSA");
-                signer.Init(false, pubKey);
-                signer.BlockUpdate(ticket.Message);
-                if (signer.VerifySignature(ticket.Signature))
+
+                if (verifyResult)
+                {
+                    ECPublicKeyParameters pubKey = new(p.Normalize(), curve);
+                    ISigner signer = SignerUtilities.GetSigner(ticket.HashName + "withECDSA");
+                    signer.Init(false, pubKey);
+                    signer.BlockUpdate(ticket.Message);
+                    if (signer.VerifySignature(ticket.Signature))
+                    {
+                        points.Add(p);
+                    }
+                }
+                else
                 {
                     points.Add(p);
                 }

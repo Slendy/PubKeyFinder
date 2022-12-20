@@ -1,7 +1,7 @@
 ﻿using Org.BouncyCastle.Asn1;
 using Org.BouncyCastle.Crypto.Parameters;
-using Org.BouncyCastle.Math.EC;
 using PubKeyFinder.Ticket;
+using ECPoint = Org.BouncyCastle.Math.EC.ECPoint;
 
 namespace PubKeyFinder;
 
