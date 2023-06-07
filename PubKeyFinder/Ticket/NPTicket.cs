@@ -101,7 +101,7 @@ public class NpTicket
         if (ticket.Signature.Length == 56)
         {
             ticket.Message = data.AsSpan()[..data.AsSpan().IndexOf(ticket.Signature)].ToArray(); 
-            ticket.HashedMessage = SHA1.Create().ComputeHash(ticket.Message);
+            ticket.HashedMessage = SHA1.HashData(ticket.Message);
             ticket.HashName = "SHA1";
             ticket.CurveName = "secp192r1";
         }
@@ -120,7 +120,7 @@ public class NpTicket
     {
         return hashName switch
         {
-            "SHA1" => SHA1.Create().ComputeHash(data),
+            "SHA1" => SHA1.HashData(data),
             "SHA224" => ComputeSha224Hash(data),
             _ => HashAlgorithm.Create(hashName)?.ComputeHash(data) ?? Array.Empty<byte>(),
         };

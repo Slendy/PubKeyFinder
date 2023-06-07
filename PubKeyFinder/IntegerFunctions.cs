@@ -4,16 +4,14 @@ namespace PubKeyFinder;
 
 public static class IntegerFunctions
 {
-    private static readonly BigInteger ZERO = BigInteger.Zero;
+    private static readonly BigInteger Zero = BigInteger.Zero;
 
-    private static readonly BigInteger ONE = BigInteger.One;
+    private static readonly BigInteger One = BigInteger.One;
 
-    private static readonly BigInteger TWO = BigInteger.Two;
-
-    private static readonly BigInteger FOUR = BigInteger.Four;
+    private static readonly BigInteger Two = BigInteger.Two;
 
     // the jacobi function uses this lookup table
-    private static readonly int[] jacobiTable = { 0, 1, 0, -1, 0, -1, 0, 1 };
+    private static readonly int[] JacobiTable = { 0, 1, 0, -1, 0, -1, 0, 1 };
 
     // Computes the value of the Jacobi symbol (A|B). The following properties
     // hold for the Jacobi symbol which makes it a very efficient way to
@@ -32,7 +30,7 @@ public static class IntegerFunctions
     // @param B integer value
     // @return value of the jacobi symbol (A|B)
     //
-    public static int jacobi(BigInteger A, BigInteger B)
+    private static int Jacobi(BigInteger A, BigInteger B)
     {
         BigInteger a, b, v;
         long k = 1;
@@ -40,10 +38,10 @@ public static class IntegerFunctions
         k = 1;
 
         // test trivial cases
-        if (B.Equals(ZERO))
+        if (B.Equals(Zero))
         {
             a = A.Abs();
-            return a.Equals(ONE) ? 1 : 0;
+            return a.Equals(One) ? 1 : 0;
         }
 
         if (!A.TestBit(0) && !B.TestBit(0))
@@ -64,16 +62,16 @@ public static class IntegerFunctions
             }
         }
 
-        v = ZERO;
+        v = Zero;
         while (!b.TestBit(0))
         {
-            v = v.Add(ONE); // v = v + 1
-            b = b.Divide(TWO); // b = b/2
+            v = v.Add(One); // v = v + 1
+            b = b.Divide(Two); // b = b/2
         }
 
         if (v.TestBit(0))
         {
-            k = k * jacobiTable[a.IntValue & 7];
+            k = k * JacobiTable[a.IntValue & 7];
         }
 
         if (a.SignValue < 0)
@@ -90,17 +88,17 @@ public static class IntegerFunctions
         // main loop
         while (a.SignValue != 0)
         {
-            v = ZERO;
+            v = Zero;
             while (!a.TestBit(0))
             {
                 // a is even
-                v = v.Add(ONE);
-                a = a.Divide(TWO);
+                v = v.Add(One);
+                a = a.Divide(Two);
             }
 
             if (v.TestBit(0))
             {
-                k = k * jacobiTable[b.IntValue & 7];
+                k = k * JacobiTable[b.IntValue & 7];
             }
 
             if (a.CompareTo(b) < 0)
@@ -117,7 +115,7 @@ public static class IntegerFunctions
             a = a.Subtract(b);
         }
 
-        return b.Equals(ONE) ? (int)k : 0;
+        return b.Equals(One) ? (int)k : 0;
     }
 
     /**
@@ -134,17 +132,17 @@ public static class IntegerFunctions
     {
         BigInteger v;
 
-        if (a.CompareTo(ZERO) < 0)
+        if (a.CompareTo(Zero) < 0)
         {
             a = a.Add(p);
         }
 
-        if (a.Equals(ZERO))
+        if (a.Equals(Zero))
         {
-            return ZERO;
+            return Zero;
         }
 
-        if (p.Equals(TWO))
+        if (p.Equals(Two))
         {
             return a;
         }
@@ -152,24 +150,19 @@ public static class IntegerFunctions
         // p = 3 mod 4
         if (p.TestBit(0) && p.TestBit(1))
         {
-            if (jacobi(a, p) == 1)
-            {
-                // a quadr. residue mod p
-                v = p.Add(ONE); // v = p+1
-                v = v.ShiftRight(2); // v = v/4
-                return a.ModPow(v, p); // return a^v mod p
-                // return --> a^((p+1)/4) mod p
-            }
-
-            throw new ArgumentException("No quadratic residue: " + a + ", " + p);
+            if (Jacobi(a, p) != 1) throw new ArgumentException("No quadratic residue: " + a + ", " + p);
+            
+            // a quadr. residue mod p
+            v = p.Add(One); // v = p+1
+            v = v.ShiftRight(2); // v = v/4
+            return a.ModPow(v, p); // return a^v mod p
+            // return --> a^((p+1)/4) mod p
         }
-
-        long t = 0;
 
         // initialization
         // compute k and s, where p = 2^s (2k+1) +1
 
-        BigInteger k = p.Subtract(ONE); // k = p-1
+        BigInteger k = p.Subtract(One); // k = p-1
         long s = 0;
         while (!k.TestBit(0))
         {
@@ -178,7 +171,7 @@ public static class IntegerFunctions
             k = k.ShiftRight(1); // k = k/2
         }
 
-        k = k.Subtract(ONE); // k = k - 1
+        k = k.Subtract(One); // k = k - 1
         k = k.ShiftRight(1); // k = k/2
 
         // initial values
@@ -188,33 +181,33 @@ public static class IntegerFunctions
         n = n.Multiply(a).Remainder(p); // n = n * a % p
         r = r.Multiply(a).Remainder(p); // r = r * a %p
 
-        if (n.Equals(ONE))
+        if (n.Equals(One))
         {
             return r;
         }
 
         // non-quadratic residue
-        BigInteger z = TWO; // z = 2
-        while (jacobi(z, p) == 1)
+        BigInteger z = Two; // z = 2
+        while (Jacobi(z, p) == 1)
         {
             // while z quadratic residue
-            z = z.Add(ONE); // z = z + 1
+            z = z.Add(One); // z = z + 1
         }
 
         v = k;
-        v = v.Multiply(TWO); // v = 2k
-        v = v.Add(ONE); // v = 2k + 1
+        v = v.Multiply(Two); // v = 2k
+        v = v.Add(One); // v = 2k + 1
         BigInteger c = z.ModPow(v, p); // c = z^v mod p
 
         // iteration
-        while (n.CompareTo(ONE) == 1)
+        while (n.CompareTo(One) == 1)
         {
             // n > 1
             k = n; // k = n
-            t = s; // t = s
+            long t = s;
             s = 0;
 
-            while (!k.Equals(ONE))
+            while (!k.Equals(One))
             {
                 // k != 1
                 k = k.Multiply(k).Mod(p); // k = k^2 % p
@@ -227,7 +220,7 @@ public static class IntegerFunctions
                 throw new ArgumentException("No quadratic residue: " + a + ", " + p);
             }
 
-            v = ONE;
+            v = One;
             for (long i = 0; i < t - 1; i++)
             {
                 v = v.ShiftLeft(1); // v = 1 * 2^(t - 1)

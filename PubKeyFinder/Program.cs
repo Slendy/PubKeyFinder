@@ -69,7 +69,7 @@ internal static class Program
             int count = validPoints.Count(x =>
                 x.Normalize().AffineXCoord.Equals(normalized.AffineXCoord) &&
                 x.Normalize().AffineYCoord.Equals(normalized.AffineYCoord));
-            if (count <= 1) continue;
+            if (count <= 1 && validPoints.Count > 2) continue;
             
             Console.WriteLine("=====");
             Console.WriteLine(normalized.AffineXCoord);
